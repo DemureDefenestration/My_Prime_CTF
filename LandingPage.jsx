@@ -323,7 +323,7 @@ const LandingPage = () => {
     { label: 'csharp.png', text: 'C#' },
     { label: 'mongoDB.png', text: 'MongoDb' },
     { label: 'nodejs.png', text: 'Node.js' },
-    { label: 'mysql.png', text: 'MySQL' },
+    { label: 'mySQL.png', text: 'MySQL' },
     { label: 'socketio.png', text: 'Socket.io' },
     { label: 'python.png', text: 'Python' }
   ];
