@@ -507,8 +507,9 @@ body::-webkit-scrollbar {
   max-width: 90vw;
   max-height: 90vh;
   background: transparent;
-  border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  /* Remove rounded panel and shadow so only the paper image is visible */
+  border-radius: 0;
+  box-shadow: none;
   overflow: visible;
   animation: slideUp 0.4s ease;
 }
@@ -556,6 +557,7 @@ body::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   overflow: visible; /* allow Richard image to stick out of paper */
+  background: transparent !important;
 }
 
 .modal-paper-image {
@@ -563,6 +565,7 @@ body::-webkit-scrollbar {
   height: 100%;
   object-fit: contain;
   display: block;
+  background: transparent !important;
 }
 
 .richard-overlay {
@@ -605,6 +608,7 @@ body::-webkit-scrollbar {
   overflow: hidden; /* we'll manage overflow for typing */
   word-wrap: break-word;
   white-space: pre-wrap;
+  background: transparent !important;
 }
 
 .modal-text-overlay::-webkit-scrollbar {
