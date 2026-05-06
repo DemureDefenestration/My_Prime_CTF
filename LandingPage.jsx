@@ -627,7 +627,7 @@ const LandingPage = () => {
               </a>
             </div>
             <div className="contact-row">
-              <img className="contact-icon" src="img/tg.png" alt="Telegram" style={{ borderRadius: '50%' }} />
+              <img className="contact-icon" src="/img/tg.png" alt="Telegram" style={{ borderRadius: '50%' }} />
               <a
                 className="contact-nick"
                 href="https://t.me/Ididns"
@@ -652,7 +652,7 @@ const LandingPage = () => {
           <button className="choice-button" onClick={handleLeftButtonClick} disabled={isTransitioning || theme === 'dark-red'}>
             <div className="button-image-placeholder">
               <img 
-                src={`img/${leftImages[leftIndex]}`} 
+                src={`/img/${leftImages[leftIndex]}`} 
                 alt="Left choice" 
                 className="button-image"
               />
@@ -662,7 +662,7 @@ const LandingPage = () => {
           <button className="choice-button" onClick={handleRightButtonClick} disabled={isTransitioning || theme === 'light-red'}>
             <div className="button-image-placeholder">
               <img 
-                src={`img/${rightImages[rightIndex]}`} 
+                src={`/img/${rightImages[rightIndex]}`} 
                 alt="Right choice" 
                 className="button-image"
               />
@@ -690,7 +690,7 @@ const LandingPage = () => {
         <button className="letter-button" onClick={handleLetterKClick}>
           <div className="letter-button-image-placeholder">
             <img 
-              src={`img/${isButtonClicked ? 'letterO.PNG' : 'letterK.PNG'}`} 
+              src={`/img/${isButtonClicked ? 'letterO.PNG' : 'letterK.PNG'}`} 
               alt="Letter button" 
               className="letter-button-image"
             />
@@ -706,9 +706,9 @@ const LandingPage = () => {
               ✕
             </button>
             <div className="modal-paper-container">
-              <img src="img/paper.PNG" alt="Paper" className="modal-paper-image" />
+              <img src="/img/paper.PNG" alt="Paper" className="modal-paper-image" />
               <div className={`richard-overlay ${shouldShowRichard ? 'visible' : ''}`} aria-hidden="true">
-                <img src="img/richard.png" alt="" className="richard-image" />
+                <img src="/img/richard.png" alt="" className="richard-image" />
               </div>
               <div className="modal-text-overlay">
                 <div className="typed-text" aria-live="polite">
