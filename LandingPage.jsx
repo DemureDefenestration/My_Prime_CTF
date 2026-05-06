@@ -640,7 +640,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="image-placeholder">
-          <img src={`./img/${theme === 'light-red' ? 'meW.png' : 'me.png'}`} alt="Profile" className="profile-image" />
+          <img src={`/img/${theme === 'light-red' ? 'meW.png' : 'me.png'}`} alt="Profile" className="profile-image" />
         </div>
       </div>
 
