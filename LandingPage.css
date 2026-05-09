@@ -472,6 +472,8 @@ body::-webkit-scrollbar {
   height: auto;
   max-width: 240px;
   max-height: 240px;
+  min-width: 200px;
+  min-height: 200px;
   object-fit: contain;
   display: block;
   background: transparent;
