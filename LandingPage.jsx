@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './LandingPage.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
@@ -10,6 +10,8 @@ const LandingPage = () => {
   const leftImages = ['bezzub_1.png', 'bezzub_4.png'];
   const rightImages = ['kica_1.png', 'kica_4.png'];
   const audioRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const gainNodeRef = useRef(null);
   
   const [leftIndex, setLeftIndex] = useState(1); // Дефолт: bezzub_4.png
   const [rightIndex, setRightIndex] = useState(0); // Дефолт: kica_1.png
@@ -111,6 +113,29 @@ const LandingPage = () => {
     try { window.currentTheme = theme; } catch (e) { /* ignore if not in browser */ }
   }, [theme]);
 
+  // Initialize Web Audio API for proper iOS volume control
+  const initAudioContext = useCallback((volumeValue = 0) => {
+    const audio = audioRef.current;
+    if (!audio || audioContextRef.current) return;
+
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const sourceNode = audioContext.createMediaElementAudioSource(audio);
+      const gainNode = audioContext.createGain();
+
+      sourceNode.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      audioContextRef.current = audioContext;
+      gainNodeRef.current = gainNode;
+
+      // Set initial gain value
+      gainNode.gain.value = volumeValue;
+    } catch (e) {
+      console.error('Failed to initialize Web Audio API:', e);
+    }
+  }, []);
+
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -119,8 +144,15 @@ const LandingPage = () => {
     }
 
     audio.loop = true;
-    audio.volume = volume;
-    audio.muted = volume === 0;
+    
+    // Use Web Audio API gain node if available, otherwise fall back to element volume
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = volume;
+      audio.muted = volume === 0;
+    } else {
+      audio.volume = volume;
+      audio.muted = volume === 0;
+    }
 
     const playPromise = audio.play();
 
@@ -215,7 +247,14 @@ const LandingPage = () => {
     }
 
     audio.loop = true;
-    audio.volume = volume;
+    
+    // Use Web Audio API gain node if available, otherwise fall back to element volume
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = volume;
+    } else {
+      audio.volume = volume;
+    }
+    
     audio.muted = volume === 0;
 
     if (audio.paused) {
@@ -291,14 +330,25 @@ const LandingPage = () => {
 
     const audio = audioRef.current;
 
-    if (audio) {
+    if (!audio) return;
+
+    // Initialize Web Audio API on first slider interaction with the new volume value
+    if (!audioContextRef.current) {
+      initAudioContext(nextVolume);
+    }
+
+    // Use Web Audio API gain node if available, otherwise fall back to element volume
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = nextVolume;
+    } else {
       audio.volume = nextVolume;
-      audio.muted = nextVolume === 0;
-      if (audio.paused) {
-        audio.play().catch(() => {
-          // Ignore blocked autoplay until the user interacts with the page.
-        });
-      }
+    }
+    
+    audio.muted = nextVolume === 0;
+    if (audio.paused) {
+      audio.play().catch(() => {
+        // Ignore blocked autoplay until the user interacts with the page.
+      });
     }
   };
 
