@@ -35,7 +35,6 @@ const LandingPage = () => {
   const typingIntervalRef = useRef(null);
   const pauseTimeoutRef = useRef(null);
   const typingIndexRef = useRef(0);
-  const [isPaused, setIsPaused] = useState(false);
 
   // Prepare chunks when modal opens
   useEffect(() => {
@@ -63,25 +62,12 @@ const LandingPage = () => {
     };
   }, [isModalOpen]);
 
-  // Handle typing for the current chunk (codepoint-safe) with pause/resume
+  // Handle typing for the current chunk (codepoint-safe)
   useEffect(() => {
     if (!isModalOpen || chunks.length === 0) return;
 
     const chunk = chunks[currentChunkIndex] || '';
     const chars = Array.from(chunk); // safe for unicode codepoints
-
-    // If paused, clear timers and don't start new ones
-    if (isPaused) {
-      if (typingIntervalRef.current) {
-        clearInterval(typingIntervalRef.current);
-        typingIntervalRef.current = null;
-      }
-      if (pauseTimeoutRef.current) {
-        clearTimeout(pauseTimeoutRef.current);
-        pauseTimeoutRef.current = null;
-      }
-      return;
-    }
 
     // clear any prior timers
     if (typingIntervalRef.current) {
@@ -106,15 +92,6 @@ const LandingPage = () => {
         clearInterval(typingIntervalRef.current);
         typingIntervalRef.current = null;
         typingIndexRef.current = chars.length;
-
-        // after typing completes, wait 5s then move to next chunk (if any)
-        if (currentChunkIndex + 1 < chunks.length) {
-          pauseTimeoutRef.current = setTimeout(() => {
-            typingIndexRef.current = 0;
-            setDisplayedText('');
-            setCurrentChunkIndex((c) => c + 1);
-          }, 5000);
-        }
       }
     }, 25); // typing speed (ms per char)
 
@@ -128,7 +105,7 @@ const LandingPage = () => {
         pauseTimeoutRef.current = null;
       }
     };
-  }, [currentChunkIndex, chunks, isModalOpen, isPaused]);
+  }, [currentChunkIndex, chunks, isModalOpen]);
   useEffect(() => {
     try { window.currentTheme = theme; } catch (e) { /* ignore if not in browser */ }
   }, [theme]);
@@ -383,8 +360,8 @@ const LandingPage = () => {
     // keep `isButtonClicked` true so the button stays as letterO after reading
   };
 
-  const handleFastSkip = () => {
-    // immediately advance to next chunk (useful for fast readers)
+  const handlePaperClick = () => {
+    // advance to next chunk on click
     if (typingIntervalRef.current) {
       clearInterval(typingIntervalRef.current);
       typingIntervalRef.current = null;
@@ -398,11 +375,6 @@ const LandingPage = () => {
       typingIndexRef.current = 0;
       setDisplayedText('');
       setCurrentChunkIndex((c) => c + 1);
-    } else {
-      // if at last chunk, show whole chunk and stop
-      const chunk = chunks[currentChunkIndex] || '';
-      setDisplayedText(chunk);
-      typingIndexRef.current = Array.from(chunk).length;
     }
   };
 
@@ -835,7 +807,7 @@ const LandingPage = () => {
               ✕
             </button>
           
-            <div className="modal-paper-container">
+            <div className="modal-paper-container" onClick={handlePaperClick}>
               <img src="/img/paper.PNG" alt="Paper" className="modal-paper-image" />
               <div className={`richard-overlay ${shouldShowRichard ? 'visible' : ''}`} aria-hidden="true">
                 <img src="/img/richard.png" alt="" className="richard-image" />
@@ -846,26 +818,11 @@ const LandingPage = () => {
                   <span className="typed-caret">|</span>
                 </div>
               </div>
-              <div className="modal-controls">
-                <button
-                  type="button"
-                  className={`modal-control-button pause-toggle ${isPaused ? 'is-paused' : ''}`}
-                  onClick={() => setIsPaused((p) => !p)}
-                  aria-pressed={isPaused}
-                  aria-label={isPaused ? 'Resume animations and text pagination' : 'Pause animations and text pagination'}
-                >
-                  Для повільно-читущих (зупинити)
-                </button>
-
-                <button
-                  type="button"
-                  className="modal-control-button fast-skip"
-                  onClick={handleFastSkip}
-                  aria-label="Для швидко-читущих (перегорнути сторінку)"
-                >
-                  Для швидко-читущих (перегорнути)
-                </button>
-              </div>
+              {currentChunkIndex + 1 < chunks.length && (
+                <div className="modal-read-hint">
+                  Натисни на лист, щоб читати далі
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -985,7 +942,7 @@ const LandingPage = () => {
           </div>
           <section className="jam-case-section" aria-labelledby="jam-case-title">
         <div className="jam-ribbon" aria-hidden="true">
-          <div className={`jam-ribbon-track ${isPaused ? 'paused' : ''}`}>
+          <div className="jam-ribbon-track">
             <span>  ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT   ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
             <span>  ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT   ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
           </div>

@@ -807,60 +807,7 @@ body::-webkit-scrollbar {
   transition: background 0.2s ease;
 }
 
-.modal-controls {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 18px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  z-index: 1002;
-  pointer-events: auto;
-}
-
-.modal-content > .modal-close-button:hover {
-  background: rgba(0, 0, 0, 0.9);
-}
-
-.modal-control-button {
-  background: rgba(0, 0, 0, 0.72);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-family: 'Sofia Sans Condensed', sans-serif;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.08s ease;
-  font-size: 13px;
-}
-
-.modal-control-button:hover {
-  background: rgba(0, 0, 0, 0.9);
-}
-
-.modal-control-button.modal-close-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 20px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ensure controls don't overlap paper edges on small screens */
-@media (max-width: 640px) {
-  .modal-controls {
-    gap: 6px;
-    bottom: 12px;
-  }
-  .modal-control-button {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-}
+/* .modal-controls - REMOVED (no longer needed) */
 
 .modal-paper-container {
   position: relative;
@@ -871,6 +818,31 @@ body::-webkit-scrollbar {
   justify-content: center;
   overflow: visible; /* allow Richard image to stick out of paper */
   background: transparent !important;
+  cursor: pointer;
+}
+
+.modal-read-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 60px;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 16px;
+  font-family: 'Sofia Sans Condensed', sans-serif;
+  text-align: center;
+  animation: pulse-hint 1.5s ease-in-out infinite;
+  z-index: 1002;
+}
+
+@keyframes pulse-hint {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+  }
 }
 
 .modal-paper-image {
@@ -943,7 +915,7 @@ body::-webkit-scrollbar {
 
 /* Typed text styling */
 .typed-text {
-  font-size: clamp(20px, 4vmin, 44px); /* Responsive font size */
+  font-size: clamp(30px, 5vmin, 66px); /* Responsive font size, 1.5x larger */
   line-height: 1.4;
   height: auto;
   min-height: 100%;
@@ -976,7 +948,8 @@ body::-webkit-scrollbar {
 
 .hardskills-swiper {
   width: 100%;
-  padding: 18px 0 34px;
+  padding-top: 50px !important;
+  padding-bottom: 50px !important;
 }
 
 .hardskills-swiper .swiper-slide {
@@ -1478,9 +1451,14 @@ body::-webkit-scrollbar {
     }
 
     .typed-text {
-      font-size: clamp(16px, 5vmin, 28px);
+      font-size: clamp(20px, 5vmin, 40px);
       line-height: 1.3;
     }
+
+  .modal-read-hint {
+    font-size: 14px;
+    bottom: 12px;
+  }
 
   .richard-image {
     width: 150px;
