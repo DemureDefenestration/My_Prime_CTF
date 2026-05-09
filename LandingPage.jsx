@@ -399,9 +399,12 @@ const LandingPage = () => {
   const [terminalCanClear, setTerminalCanClear] = useState(false);
   const [terminalChunks, setTerminalChunks] = useState([]);
   const [terminalCurrentChunkIndex, setTerminalCurrentChunkIndex] = useState(0);
+  const [terminalUserScrolled, setTerminalUserScrolled] = useState(false);
   const terminalTypingIntervalRef = useRef(null);
   const terminalPauseTimeoutRef = useRef(null);
   const terminalOutputEndRef = useRef(null);
+  const terminalAutoScrollingRef = useRef(false);
+  const terminalLastScrollTimeRef = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -419,6 +422,9 @@ const LandingPage = () => {
   // Prepare chunks when terminal selection changes
   useEffect(() => {
     if (!terminalSelection) return;
+
+    // Скидаємо флаг ручної прокрутки коли починається новий вибір
+    setTerminalUserScrolled(false);
 
     const paragraphs = terminalVariants[terminalSelection] || [];
     // Join paragraphs with newlines to create continuous text
@@ -506,32 +512,58 @@ const LandingPage = () => {
       const element = terminalOutputEndRef.current;
       if (!element) return;
         
+      // Перевіряємо, чи користувач ручно не прокрутив сторінку
+      if (terminalUserScrolled) return;
+      
       // Перевіряємо, чи елемент вже видимий на екрані
       const rect = element.getBoundingClientRect();
       const isVisible = rect.top >= 0 && rect.top < window.innerHeight;
 
       // Прокручуємо тільки якщо елемент знаходиться за межами видимості (внизу)
       if (!isVisible) {
+        terminalAutoScrollingRef.current = true;
+        terminalLastScrollTimeRef.current = Date.now();
         element.scrollIntoView({
           block: 'end',
           inline: 'nearest',
           behavior: 'auto'
         });
+        // Залишаємо флаг true довше, щоб дати час на завершення скролу
+        setTimeout(() => {
+          terminalAutoScrollingRef.current = false;
+        }, 300);
       }
     });
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [terminalSelection, terminalCompletedText, terminalCurrentText, terminalCurrentChunkIndex, terminalCanClear, terminalSuggestionVisible]);
+  }, [terminalSelection, terminalCompletedText, terminalCurrentText, terminalCurrentChunkIndex, terminalCanClear, terminalSuggestionVisible, terminalUserScrolled]);
 
-  // Прокручуємо в самий низ коли з'явиться кнопка очистити
+  // Слухач для відстеження ручної прокрутки користувачем
   useEffect(() => {
-    if (!terminalCanClear) return;
+    if (!terminalSelection) return;
 
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth'
-    });
-  }, [terminalCanClear]);
+    const detectUserInteraction = () => {
+      // Якщо програмний скрол був менше ніж 150ms тому - це не ручний скрол
+      const timeSinceAutoScroll = Date.now() - terminalLastScrollTimeRef.current;
+      if (timeSinceAutoScroll < 150 && terminalAutoScrollingRef.current) return;
+      
+      // Це ручний скрол - вимикаємо автоскрол назавжди
+      setTerminalUserScrolled(true);
+    };
+
+    // Слухаємо на wheel (мишка або трекпад)
+    window.addEventListener('wheel', detectUserInteraction, { passive: true });
+    // Слухаємо на touchmove (мобільні пристрої)
+    window.addEventListener('touchmove', detectUserInteraction, { passive: true });
+    // Слухаємо на scroll (в т.ч. програмний, але перевіримо時間)
+    window.addEventListener('scroll', detectUserInteraction, { passive: true });
+    
+    return () => {
+      window.removeEventListener('wheel', detectUserInteraction);
+      window.removeEventListener('touchmove', detectUserInteraction);
+      window.removeEventListener('scroll', detectUserInteraction);
+    };
+  }, [terminalSelection]);
 
   const handleShowSuggestion = () => {
     setTerminalSuggestionVisible(true);
@@ -540,6 +572,7 @@ const LandingPage = () => {
   const handleTerminalChoice = (choice) => {
     setTerminalSelection(choice);
     setTerminalSuggestionVisible(false);
+    setTerminalUserScrolled(false); // Скидаємо флаг прокрутки для нового вибору
   };
 
   const handleClearTerminal = () => {
@@ -559,6 +592,7 @@ const LandingPage = () => {
     setTerminalChunks([]);
     setTerminalCurrentChunkIndex(0);
     setTerminalCanClear(false);
+    setTerminalUserScrolled(false); // Скидаємо флаг прокрутки при очищенні
   };
 
   const renderTypedText = () => {
