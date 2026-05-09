@@ -400,6 +400,7 @@ const LandingPage = () => {
   const [terminalChunks, setTerminalChunks] = useState([]);
   const [terminalCurrentChunkIndex, setTerminalCurrentChunkIndex] = useState(0);
   const [terminalUserScrolled, setTerminalUserScrolled] = useState(false);
+  const [isJamCaseOpen, setIsJamCaseOpen] = useState(false);
   const terminalTypingIntervalRef = useRef(null);
   const terminalPauseTimeoutRef = useRef(null);
   const terminalOutputEndRef = useRef(null);
@@ -694,6 +695,7 @@ const LandingPage = () => {
         })}
       </div>
       <audio ref={audioRef} src="mus/GOT.mp3" autoPlay loop preload="auto" />
+      
       {/* Header section with text and image */}
       <div className="header-section">
         <div className="text-container">
@@ -917,6 +919,55 @@ const LandingPage = () => {
             </div>
           )}
           </div>
+          <section className="jam-case-section" aria-labelledby="jam-case-title">
+        <div className="jam-ribbon" aria-hidden="true">
+          <div className="jam-ribbon-track">
+            <span>ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
+            <span>ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
+          </div>
+        </div>
+
+        <div className="jam-case-shell">
+          <button
+            type="button"
+            className={`jam-case-toggle ${isJamCaseOpen ? 'is-open' : ''}`}
+            onClick={() => setIsJamCaseOpen((prev) => !prev)}
+            aria-expanded={isJamCaseOpen}
+            aria-controls="jam-case-content"
+          >
+            <span id="jam-case-title" className="jam-case-toggle-text">Вся правда про справу пікмі-варення</span>
+            <span className="jam-case-toggle-icon" aria-hidden="true">
+              {isJamCaseOpen ? '−' : '+'}
+            </span>
+          </button>
+
+          <div id="jam-case-content" className={`jam-case-content ${isJamCaseOpen ? 'is-open' : ''}`}>
+            <div className="jam-case-image-wrap">
+              <img src="/img/jem.png" alt="Jem" className="jam-case-image" />
+            </div>
+
+            <div className="jam-case-text">
+              <p>
+                Цієї ночі стіни гуртожитку №12 здригнулися від жаху, коли звичайна жага до пива
+                перетворилася на епічну катастрофу національного масштабу. Поки Максим Палій та його
+                анонімний супротивник вели запеклу боротьбу за охолоджену торпеду прямо біля відчиненого
+                холодильника, фатальна випадковість назавжди змінила хід вечора. Лише один необережний
+                рух свідка – і дверцята, наче лезо гільйотини, підштовхнули скляну банку з варенням у
+                безодню.
+              </p>
+              <p>
+                Світ немов зупинився, коли тендітне скло розбилося на мільйони осколків, заливаючи
+                підлогу липкою, багряною рідиною. Очевидці події в розпачі закривали обличчя руками,
+                викрикуючи крізь сльози: «І знову там на підлогу щось падає!». Атмосфера розкалилася до
+                межі, адже натовп усвідомив найстрашніше — ножки Макса опинилися в смертельній небезпеці
+                серед солодкого мінного поля. Зараз на місці трагедії працюють лише шок та липке взуття,
+                поки учасники намагаються осягнути масштаби цієї десертної руйнації.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="details-section">
         <h2 className="choice-text">За деталями нижче</h2>
         <a className="details-link" href="https://t.me/not_a_virus_exe_bot" target="_blank" rel="noreferrer">
