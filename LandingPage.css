@@ -407,6 +407,34 @@ body::-webkit-scrollbar {
   white-space: nowrap;
 }
 
+/* Pause state for the ribbon: halts CSS animation */
+.jam-ribbon-track.paused {
+  animation-play-state: paused !important;
+}
+
+/* Pause toggle button */
+.pause-toggle {
+  margin-left: 16px;
+  margin-right: 12px;
+  background: rgba(0,0,0,0.18);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: 'Comfortaa', sans-serif;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.pause-toggle:hover {
+  background: rgba(0,0,0,0.28);
+}
+
+.pause-toggle.is-paused {
+  background: rgba(255,255,255,0.12);
+  color: #000;
+}
+
 @keyframes jam-ribbon-slide {
   from {
     transform: translateX(0%);
@@ -779,8 +807,59 @@ body::-webkit-scrollbar {
   transition: background 0.2s ease;
 }
 
-.modal-close-button:hover {
+.modal-controls {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  z-index: 1002;
+  pointer-events: auto;
+}
+
+.modal-content > .modal-close-button:hover {
   background: rgba(0, 0, 0, 0.9);
+}
+
+.modal-control-button {
+  background: rgba(0, 0, 0, 0.72);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: 'Sofia Sans Condensed', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.08s ease;
+  font-size: 13px;
+}
+
+.modal-control-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.modal-control-button.modal-close-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ensure controls don't overlap paper edges on small screens */
+@media (max-width: 640px) {
+  .modal-controls {
+    gap: 6px;
+    bottom: 12px;
+  }
+  .modal-control-button {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
 }
 
 .modal-paper-container {

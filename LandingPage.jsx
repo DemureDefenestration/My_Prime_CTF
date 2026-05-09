@@ -34,6 +34,8 @@ const LandingPage = () => {
   const [displayedText, setDisplayedText] = useState('');
   const typingIntervalRef = useRef(null);
   const pauseTimeoutRef = useRef(null);
+  const typingIndexRef = useRef(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Prepare chunks when modal opens
   useEffect(() => {
@@ -50,6 +52,7 @@ const LandingPage = () => {
     setChunks(chks);
     setCurrentChunkIndex(0);
     setDisplayedText('');
+    typingIndexRef.current = 0;
 
     return () => {
       // cleanup if modal closed quickly
@@ -60,14 +63,25 @@ const LandingPage = () => {
     };
   }, [isModalOpen]);
 
-  // Handle typing for the current chunk (codepoint-safe)
+  // Handle typing for the current chunk (codepoint-safe) with pause/resume
   useEffect(() => {
     if (!isModalOpen || chunks.length === 0) return;
 
     const chunk = chunks[currentChunkIndex] || '';
     const chars = Array.from(chunk); // safe for unicode codepoints
-    let idx = 0;
-    setDisplayedText('');
+
+    // If paused, clear timers and don't start new ones
+    if (isPaused) {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+        typingIntervalRef.current = null;
+      }
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+        pauseTimeoutRef.current = null;
+      }
+      return;
+    }
 
     // clear any prior timers
     if (typingIntervalRef.current) {
@@ -79,18 +93,24 @@ const LandingPage = () => {
       pauseTimeoutRef.current = null;
     }
 
+    // resume from saved index if available
+    let idx = Math.max(0, Math.min(typingIndexRef.current || 0, chars.length));
+    setDisplayedText(chars.slice(0, idx).join(''));
+
     typingIntervalRef.current = setInterval(() => {
-      // set substring up to current char (avoids broken graphemes)
-      setDisplayedText(chars.slice(0, idx + 1).join(''));
       idx += 1;
+      typingIndexRef.current = idx;
+      setDisplayedText(chars.slice(0, idx).join(''));
 
       if (idx >= chars.length) {
         clearInterval(typingIntervalRef.current);
         typingIntervalRef.current = null;
+        typingIndexRef.current = chars.length;
 
         // after typing completes, wait 5s then move to next chunk (if any)
         if (currentChunkIndex + 1 < chunks.length) {
           pauseTimeoutRef.current = setTimeout(() => {
+            typingIndexRef.current = 0;
             setDisplayedText('');
             setCurrentChunkIndex((c) => c + 1);
           }, 5000);
@@ -108,7 +128,7 @@ const LandingPage = () => {
         pauseTimeoutRef.current = null;
       }
     };
-  }, [currentChunkIndex, chunks, isModalOpen]);
+  }, [currentChunkIndex, chunks, isModalOpen, isPaused]);
   useEffect(() => {
     try { window.currentTheme = theme; } catch (e) { /* ignore if not in browser */ }
   }, [theme]);
@@ -361,6 +381,29 @@ const LandingPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     // keep `isButtonClicked` true so the button stays as letterO after reading
+  };
+
+  const handleFastSkip = () => {
+    // immediately advance to next chunk (useful for fast readers)
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+      pauseTimeoutRef.current = null;
+    }
+
+    if (currentChunkIndex + 1 < chunks.length) {
+      typingIndexRef.current = 0;
+      setDisplayedText('');
+      setCurrentChunkIndex((c) => c + 1);
+    } else {
+      // if at last chunk, show whole chunk and stop
+      const chunk = chunks[currentChunkIndex] || '';
+      setDisplayedText(chunk);
+      typingIndexRef.current = Array.from(chunk).length;
+    }
   };
 
   const shouldShowRichard = isModalOpen && currentChunkIndex === 2;
@@ -791,6 +834,7 @@ const LandingPage = () => {
             <button className="modal-close-button" onClick={closeModal}>
               ✕
             </button>
+          
             <div className="modal-paper-container">
               <img src="/img/paper.PNG" alt="Paper" className="modal-paper-image" />
               <div className={`richard-overlay ${shouldShowRichard ? 'visible' : ''}`} aria-hidden="true">
@@ -801,6 +845,26 @@ const LandingPage = () => {
                   {renderTypedText()}
                   <span className="typed-caret">|</span>
                 </div>
+              </div>
+              <div className="modal-controls">
+                <button
+                  type="button"
+                  className={`modal-control-button pause-toggle ${isPaused ? 'is-paused' : ''}`}
+                  onClick={() => setIsPaused((p) => !p)}
+                  aria-pressed={isPaused}
+                  aria-label={isPaused ? 'Resume animations and text pagination' : 'Pause animations and text pagination'}
+                >
+                  Для повільно-читущих (зупинити)
+                </button>
+
+                <button
+                  type="button"
+                  className="modal-control-button fast-skip"
+                  onClick={handleFastSkip}
+                  aria-label="Для швидко-читущих (перегорнути сторінку)"
+                >
+                  Для швидко-читущих (перегорнути)
+                </button>
               </div>
             </div>
           </div>
@@ -921,7 +985,7 @@ const LandingPage = () => {
           </div>
           <section className="jam-case-section" aria-labelledby="jam-case-title">
         <div className="jam-ribbon" aria-hidden="true">
-          <div className="jam-ribbon-track">
+          <div className={`jam-ribbon-track ${isPaused ? 'paused' : ''}`}>
             <span>  ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT   ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
             <span>  ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT   ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
           </div>
