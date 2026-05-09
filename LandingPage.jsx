@@ -922,8 +922,8 @@ const LandingPage = () => {
           <section className="jam-case-section" aria-labelledby="jam-case-title">
         <div className="jam-ribbon" aria-hidden="true">
           <div className="jam-ribbon-track">
-            <span>ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
-            <span>ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
+            <span>  ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT   ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
+            <span>  ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT   ТЕРМІНОВІ НОВИНИ: КРИВАВА ДРАМА НА CODING NIGHT</span>
           </div>
         </div>
 

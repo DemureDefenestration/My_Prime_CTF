@@ -385,14 +385,17 @@ body::-webkit-scrollbar {
   width: max-content;
   gap: 0;
   will-change: transform;
-  animation: jam-ribbon-slide 8s linear infinite;
+  animation: jam-ribbon-slide 12s linear infinite;
+  /* ensure items keep their intrinsic width so duplicated content lines up */
 }
-
+.jam-ribbon-track > * {
+  flex: 0 0 auto;
+}
 .jam-ribbon-track span {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 100%;
+  min-width: fit-content;
   padding: 12px 28px;
   color: #ffffff;
   font-family: 'Oswald', sans-serif;
@@ -406,11 +409,11 @@ body::-webkit-scrollbar {
 
 @keyframes jam-ribbon-slide {
   from {
-    transform: translateX(-50%);
+    transform: translateX(0%);
   }
 
   to {
-    transform: translateX(0%);
+    transform: translateX(-50%);
   }
 }
 
