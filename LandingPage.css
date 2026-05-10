@@ -830,19 +830,20 @@ body::-webkit-scrollbar {
   /* For the sliding ribbon, disable the slide animation and allow horizontal scrolling
      so text is not truncated; on very small screens the ribbon becomes a scrollable row */
   .jam-ribbon {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    /* Повертаємо приховування контенту, щоб анімація мала сенс */
+    overflow: hidden; 
   }
 
   .jam-ribbon-track {
-    animation: none;
-    display: inline-flex;
+    /* Видаляємо animation: none, щоб успадкувати анімацію з основних стилів */
+    display: flex;
+    width: max-content;
   }
 
   .jam-ribbon-track span {
-    white-space: normal;
+    /* Важливо залишити white-space: nowrap, інакше текст перенесеться і стрічка "зламається" */
+    white-space: nowrap;
     padding: 10px 14px;
-    min-width: 0;
   }
 
   .jam-case-image-wrap {
