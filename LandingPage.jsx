@@ -12,6 +12,7 @@ const LandingPage = () => {
   const audioRef = useRef(null);
   const audioContextRef = useRef(null);
   const gainNodeRef = useRef(null);
+  const swiperRef = useRef(null);
   
   const [leftIndex, setLeftIndex] = useState(1); // Дефолт: bezzub_4.png
   const [rightIndex, setRightIndex] = useState(0); // Дефолт: kica_1.png
@@ -830,24 +831,49 @@ const LandingPage = () => {
       <div className="hardskills-container">
         <h2 className="choice-text">Hardskills</h2>
         <div className="hardskills-carousel-shell">
+          <div className="hardskills-nav-left">
+            <button
+              className="hardskills-button-prev"
+              onClick={() => {
+                if (swiperRef.current && swiperRef.current.swiper) {
+                  swiperRef.current.swiper.slidePrev();
+                }
+              }}
+              aria-label="Previous skill"
+              type="button"
+            />
+          </div>
           <Swiper
+            ref={swiperRef}
             className="hardskills-swiper"
             modules={[Navigation]}
-            navigation
+            navigation={false}
             centeredSlides
             slidesPerView={3}
-            spaceBetween={25}
+            spaceBetween={8}
             loop
             grabCursor
             speed={450}
             breakpoints={{
               0: {
                 slidesPerView: 3,
+                spaceBetween: 6
+              },
+              480: {
+                slidesPerView: 3,
+                spaceBetween: 8
+              },
+              640: {
+                slidesPerView: 3,
                 spaceBetween: 10
               },
               768: {
                 slidesPerView: 3,
-                spaceBetween: 18
+                spaceBetween: 16
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 20
               }
             }}
           >
@@ -860,6 +886,18 @@ const LandingPage = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="hardskills-nav-right">
+            <button
+              className="hardskills-button-next"
+              onClick={() => {
+                if (swiperRef.current && swiperRef.current.swiper) {
+                  swiperRef.current.swiper.slideNext();
+                }
+              }}
+              aria-label="Next skill"
+              type="button"
+            />
+          </div>
         </div>
       </div>
       <div className="terminal-section">

@@ -807,6 +807,123 @@ body::-webkit-scrollbar {
   transition: background 0.2s ease;
 }
 
+/* Responsive fixes: prevent jam-case text clipping on very narrow screens */
+@media (max-width: 480px) {
+  .jam-case-content {
+    grid-template-columns: 1fr;
+  }
+
+  .jam-case-text {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    font-size: clamp(16px, 3.8vw, 20px);
+    line-height: 1.6;
+  }
+
+  /* Allow the jam-case container to grow vertically instead of being clipped */
+  .jam-case-content.is-open {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* For the sliding ribbon, disable the slide animation and allow horizontal scrolling
+     so text is not truncated; on very small screens the ribbon becomes a scrollable row */
+  .jam-ribbon {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .jam-ribbon-track {
+    animation: none;
+    display: inline-flex;
+  }
+
+  .jam-ribbon-track span {
+    white-space: normal;
+    padding: 10px 14px;
+    min-width: 0;
+  }
+
+  .jam-case-image-wrap {
+    max-width: 100%;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .jam-case-toggle {
+    padding: 12px 14px;
+  }
+}
+
+/* Additional small-screen fixes: let the jam-case container expand instead of clipping */
+@media (max-width: 700px) {
+  .jam-case-shell {
+    overflow: visible;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 20px;
+  }
+
+  .jam-case-section {
+    padding: 0 12px;
+  }
+
+  /* Switch to flex column on small screens so sizing is predictable. Image will sit on top. */
+  .jam-case-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* collapsed by default so toggle hides the content */
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height 0.55s ease, padding 0.35s ease, opacity 0.35s ease;
+    grid-auto-rows: auto;
+  }
+
+  .jam-case-content.is-open {
+    max-height: 2000px; /* large enough to reveal content */
+    overflow: visible;
+    padding: 16px;
+  }
+
+  /* Place image above text and let it size based on available container space */
+  .jam-case-image-wrap {
+    order: -1;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 0;
+    justify-self: stretch;
+    flex: 0 0 auto;
+    display: block;
+  }
+
+  /* Limit image height to a portion of the viewport so it uses available space but doesn't overflow */
+  .jam-case-image {
+    width: 100%;
+    height: auto;
+    max-height: min(50vh, 480px);
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .jam-case-content .jam-case-text {
+    order: 1;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .jam-case-text {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    font-size: clamp(16px, 3.5vw, 22px);
+    line-height: 1.6;
+  }
+}
+
 /* .modal-controls - REMOVED (no longer needed) */
 
 .modal-paper-container {
@@ -941,15 +1058,40 @@ body::-webkit-scrollbar {
 .hardskills-carousel-shell {
   position: relative;
   width: 100%;
-  max-width: 980px;
+  max-width: 1200px;
   margin: 24px auto 0;
-  padding: 0 56px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.hardskills-nav-left {
+  width: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hardskills-nav-right {
+  width: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .hardskills-swiper {
-  width: 100%;
+  position: relative;
+  width: 70%;
+  max-width: 840px;
+  margin: 0 auto;
   padding-top: 50px !important;
   padding-bottom: 50px !important;
+  overflow: visible;
+  flex-shrink: 0;
 }
 
 .hardskills-swiper .swiper-slide {
@@ -978,32 +1120,67 @@ body::-webkit-scrollbar {
   transform: scale(0.97);
 }
 
-.hardskills-swiper .swiper-button-prev,
-.hardskills-swiper .swiper-button-next {
+@media (min-width: 768px) {
+  .hardskills-carousel-shell {
+    gap: 0;
+  }
+}
+
+/* Якщо на дуже великих екранах стрілки мають бути ще далі */
+@media (min-width: 1200px) {
+  .hardskills-carousel-shell {
+    gap: 0;
+  }
+}
+
+.hardskills-button-prev,
+.hardskills-button-next {
   color: #ff3333;
-  width: 20px;
-  height: 42px;
-  margin-top: -21px;
-}
-
-.hardskills-swiper .swiper-button-prev::after,
-.hardskills-swiper .swiper-button-next::after {
-  font-size: 28px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  z-index: 10;
+  transition: all 0.3s ease, text-shadow 0.3s ease;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  font-size: 80px;
   font-weight: 700;
+  line-height: 1;
+  opacity: 1;
+  text-shadow: 0 0 15px rgba(255, 51, 51, 0.8), 0 0 30px rgba(255, 0, 0, 0.5);
 }
 
-.hardskills-swiper .swiper-button-prev {
-  left: 0px;
-  
+.hardskills-button-prev:hover,
+.hardskills-button-next:hover {
+  opacity: 1;
+  transform: scale(1.15);
+  text-shadow: 0 0 25px rgba(255, 51, 51, 1), 0 0 40px rgba(255, 0, 0, 0.8);
 }
 
-.hardskills-swiper .swiper-button-next {
-  right: 0px;
+.hardskills-button-prev:active,
+.hardskills-button-next:active {
+  transform: scale(0.95);
+}
+
+.hardskills-button-prev::after {
+  content: '‹';
+}
+
+.hardskills-button-next::after {
+  content: '›';
 }
 
 .hardskill-card {
-  width: 80%;
-  min-height: 180px;
+  width: 90%;
+  min-height: auto;
+  aspect-ratio: 1 / 1.1;
   border-radius: 22px;
   border: 1px solid rgba(255, 51, 51, 0.32);
   background:
@@ -1013,7 +1190,7 @@ body::-webkit-scrollbar {
     0 0 0 1px rgba(255, 51, 51, 0.08) inset,
     0 18px 42px rgba(0, 0, 0, 0.38),
     0 0 22px rgba(255, 51, 51, 0.12);
-  padding: 18px 16px;
+  padding: clamp(12px, 3vw, 18px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1024,13 +1201,178 @@ body::-webkit-scrollbar {
   transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease, box-shadow 0.35s ease;
 }
 
+/* Make active slide a bit larger but keep overall centered cluster */
+.hardskills-swiper .swiper-slide-active .hardskill-card {
+  width: 100%;
+  transform: scale(1.08);
+}
+
+/* Адаптивність для карток на великих екранах */
+@media (min-width: 1440px) {
+  .hardskill-card {
+    aspect-ratio: 1 / 1;
+    padding: clamp(16px, 3.5vw, 22px);
+  }
+
+  .hardskill-label {
+    width: clamp(56px, 14vw, 80px);
+    height: clamp(56px, 14vw, 80px);
+  }
+
+  .hardskill-text {
+    font-size: clamp(16px, 3.2vw, 22px);
+  }
+
+  .hardskills-button-prev::after,
+  .hardskills-button-next::after {
+    font-size: 80px;
+  }
+}
+
+/* Адаптивність для планшетів */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hardskill-card {
+    aspect-ratio: 1 / 1.05;
+    padding: clamp(14px, 2.8vw, 18px);
+    gap: 8px;
+  }
+
+  .hardskill-label {
+    width: clamp(52px, 11vw, 68px);
+    height: clamp(52px, 11vw, 68px);
+  }
+
+  .hardskill-text {
+    font-size: clamp(15px, 2.8vw, 18px);
+  }
+
+  .hardskills-button-prev::after,
+  .hardskills-button-next::after {
+    font-size: clamp(64px, 10vw, 72px);
+  }
+}
+
+/* Адаптивність для малих екранів */
+@media (max-width: 767px) {
+  .hardskill-card {
+    aspect-ratio: 1 / 1.1;
+    padding: clamp(12px, 2.5vw, 16px);
+    gap: 4px;
+  }
+
+  .hardskill-label {
+    width: clamp(44px, 10vw, 60px);
+    height: clamp(44px, 10vw, 60px);
+    padding: clamp(5px, 1.2vw, 8px);
+  }
+
+  .hardskill-text {
+    font-size: clamp(12px, 2.5vw, 16px);
+  }
+
+  .hardskills-button-prev::after,
+  .hardskills-button-next::after {
+    font-size: clamp(56px, 12vw, 72px);
+  }
+}
+
+/* Ensure cards keep inset from carousel edges and don't overlap arrows on narrow screens */
+@media (max-width: 900px) {
+  .hardskills-carousel-shell {
+    gap: 0;
+  }
+
+  .hardskills-swiper {
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hardskills-swiper .swiper-slide {
+    padding: 0;
+  }
+
+  .hardskill-card {
+    width: 90%;
+  }
+
+  .hardskills-button-prev::after,
+  .hardskills-button-next::after {
+    font-size: 72px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hardskills-carousel-shell {
+    gap: 0;
+    padding: 0 8px;
+  }
+
+  .hardskills-nav-left {
+    width: 13%;
+  }
+
+  .hardskills-nav-right {
+    width: 13%;
+  }
+
+  .hardskills-swiper {
+    width: 74%;
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+
+  .hardskill-card {
+    width: 90%;
+    border-radius: 18px;
+  }
+
+  .hardskills-button-prev::after,
+  .hardskills-button-next::after {
+    font-size: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hardskills-carousel-shell {
+    gap: 0;
+    padding: 0;
+  }
+
+  .hardskills-nav-left {
+    width: 12%;
+  }
+
+  .hardskills-nav-right {
+    width: 12%;
+  }
+
+  .hardskills-swiper {
+    width: 76%;
+    max-width: 100%;
+    padding-top: 35px !important;
+    padding-bottom: 35px !important;
+  }
+
+  .hardskill-card {
+    width: 90%;
+    border-radius: 16px;
+  }
+
+  .hardskills-button-prev::after,
+  .hardskills-button-next::after {
+    font-size: 56px;
+  }
+}
+
 .hardskill-label {
   display: block;
-  width: 72px;
-  height: 72px;
-  flex: 0 0 72px;
+  width: clamp(48px, 12vw, 72px);
+  height: clamp(48px, 12vw, 72px);
+  flex: 0 0 auto;
   box-sizing: border-box;
-  padding: 10px;
+  padding: clamp(6px, 1.5vw, 10px);
   border-radius: 50%;
   object-fit: contain;
   background: rgba(255, 51, 51, 0.14);
@@ -1039,7 +1381,7 @@ body::-webkit-scrollbar {
 }
 
 .hardskill-text {
-  font-size: 20px;
+  font-size: clamp(14px, 3vw, 20px);
   font-weight: 700;
   line-height: 1.1;
   font-family: 'Sofia Sans Condensed', sans-serif;
@@ -1063,9 +1405,15 @@ body::-webkit-scrollbar {
   color: #111111;
 }
 
-.landing-container.theme-light-red .hardskills-swiper .swiper-button-prev,
-.landing-container.theme-light-red .hardskills-swiper .swiper-button-next {
+.landing-container.theme-light-red .hardskills-button-prev,
+.landing-container.theme-light-red .hardskills-button-next {
   color: #c62828;
+}
+
+.landing-container.theme-light-red .hardskills-button-prev:hover,
+.landing-container.theme-light-red .hardskills-button-next:hover {
+  opacity: 1;
+  transform: scale(1.15);
 }
 
 .terminal-container {
@@ -1408,9 +1756,7 @@ body::-webkit-scrollbar {
     max-height: 60px;
   }
 
-  .hardskills-carousel-shell {
-    padding: 0 38px;
-  }
+
 
   .hardskill-card {
       min-height: 140px;
