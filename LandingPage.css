@@ -993,6 +993,27 @@ body::-webkit-scrollbar {
   display: block;
 }
 
+/* Media query for small screens like 360x740 */
+@media (max-width: 360px) and (max-height: 740px) {
+  .richard-overlay {
+    /* Зменшуємо прозорість або коригуємо видимість, якщо потрібно */
+    right: 1% !important; /* Зсуваємо ближче до краю */
+    bottom: -10% !important; /* Опускаємо нижче рівня тексту */
+    transform: rotate(-20deg) !important; /* Робимо кут нахилу менш агресивним */
+  }
+
+  .richard-image {
+    width: 100px !important; /* Твій запит: рівно 20px */
+    height: auto !important;
+  }
+
+  /* Додатково коригуємо контейнер тексту, щоб він мав місце */
+  .modal-text-overlay {
+    height: 80% !important; 
+    padding-bottom: 40px !important; /* Створюємо буферну зону знизу */
+  }
+}
+
 .modal-text-overlay {
   position: absolute;
   top: 6%;
