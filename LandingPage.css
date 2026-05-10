@@ -986,7 +986,8 @@ body::-webkit-scrollbar {
 }
 
 .richard-image {
-  width: 260px;
+  max-width: 300px;
+  min-width: 20px;
   height: auto;
   display: block;
 }
@@ -1804,6 +1805,7 @@ body::-webkit-scrollbar {
   .modal-read-hint {
     font-size: 14px;
     bottom: 12px;
+    align-items: center;
   }
 
   .richard-image {
